@@ -41,6 +41,9 @@ def fGn_chi_square_test(X: np.ndarray, H: float, alpha: float) \
     critical_val: float
         Critical value to accept H0
 
+    Notes
+    -----
+    Method from 'Simulation of FBm' master thesis section 3.2.2
     """
     assert X.ndim == 1
     assert 0 <= alpha <= 1

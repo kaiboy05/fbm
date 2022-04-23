@@ -38,7 +38,6 @@ class NaiveFBmGenerator(FBmGeneratorInterface):
         -------
         ts: `(len(size))` ndarray
             Time series of fBm, with spacing 1.
-
         """
         assert size > 1
 
