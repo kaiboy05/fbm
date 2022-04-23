@@ -1,7 +1,6 @@
-import imp
-from .FBmGeneratorInterface import FBmGeneratorInterface
+from torch import norm
+from .fbm_generator import FBmGeneratorInterface
 import numpy as np
-from scipy.linalg import toeplitz
 
 from fBm import utils
 
@@ -71,24 +70,8 @@ class NaiveFBmGenerator(FBmGeneratorInterface):
         return ts
 
 if __name__ == '__main__':
-    import matplotlib.pyplot as plt
+    from .generator_test_utils import fBm_generator_chi_square_test
 
-    fBm_generator = NaiveFBmGenerator()
-    fBm_generator.seed(42)
-
-    size = 100
-    H = 0.5
-    sim_num = 5
-
-    print(f"""
-        Generating {sim_num} simulations of fBm with Hurst {H}, size {size}.
-    """)
-    
-    fBm_ts = [fBm_generator.generate_fBm(H, size) for _ in range(sim_num)]
-    
-    for ts in fBm_ts:
-        plt.plot(np.arange(size), ts)
-    
-    plt.show()
-
-
+    fBm_generator_chi_square_test(
+        NaiveFBmGenerator(), H=0.25, plot_graph=True
+    )

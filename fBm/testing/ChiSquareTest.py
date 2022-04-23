@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 from scipy import stats
 import scipy
-from scipy.linalg import cho_solve, cho_factor
+from scipy.linalg import cholesky, solve_triangular
 
 from fBm import utils
 
@@ -47,9 +47,9 @@ def fGn_chi_square_test(X: np.ndarray, H: float, alpha: float) \
 
     N = X.size
     cov = utils.cov(N, H)
-    L, low = cho_factor(cov)
+    L = cholesky(cov, lower=True)
 
-    Z:np.ndarray = cho_solve((L, low), X)
+    Z:np.ndarray = solve_triangular(L, X, lower=True)
     stat:float = Z.dot(Z).item()
 
     critical_val:float = stats.chi2.ppf(alpha, N).item()
@@ -101,7 +101,7 @@ def fBm_chi_square_test(X: np.ndarray, H: float, alpha: float) \
 
 
 if __name__ == '__main__':
-    from fBm.sim.NaiveGenerator import NaiveFBmGenerator
+    from fBm.sim.naive import NaiveFBmGenerator
     import matplotlib.pyplot as plt
 
     size = 100
