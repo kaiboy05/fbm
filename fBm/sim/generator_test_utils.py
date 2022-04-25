@@ -19,9 +19,9 @@ def fBm_generator_chi_square_test(
 
     fBm_generator.seed(seed)
 
-    print(f"""
-        Generating {sim_num} simulations of fBm with Hurst {H}, size {size}.
-    """)
+    print(
+        f"Generating {sim_num} simulations of fBm with Hurst {H}, size {size}."
+    )
     
     fBm_ts = [fBm_generator.generate_fBm(H, size) for _ in range(sim_num)]
     
@@ -32,9 +32,10 @@ def fBm_generator_chi_square_test(
 
         accept_count = accept_count + (1 if a else 0)
 
-    print(f"""
-        {accept_count}/{sim_num} chi square tests have been passed.
-    """)
+    print(
+        f"{accept_count}/{sim_num} chi square tests have been passed."
+    )
     
+    print()
     if plot_graph:
         plt.show()

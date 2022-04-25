@@ -1,4 +1,3 @@
-from torch import norm
 from .fbm_generator import FBmGeneratorInterface
 import numpy as np
 
@@ -71,6 +70,8 @@ class NaiveFBmGenerator(FBmGeneratorInterface):
 if __name__ == '__main__':
     from .generator_test_utils import fBm_generator_chi_square_test
 
-    fBm_generator_chi_square_test(
-        NaiveFBmGenerator(), H=0.25, plot_graph=True
-    )
+    fBm_generator_chi_square_test(NaiveFBmGenerator(), H=0.1)
+    fBm_generator_chi_square_test(NaiveFBmGenerator(), H=0.25)
+    fBm_generator_chi_square_test(NaiveFBmGenerator(), H=0.5)
+    fBm_generator_chi_square_test(NaiveFBmGenerator(), H=0.75)
+    fBm_generator_chi_square_test(NaiveFBmGenerator(), H=0.9)
