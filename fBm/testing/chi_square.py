@@ -8,6 +8,54 @@ from scipy.linalg import cholesky, solve_triangular
 
 from fBm import utils
 
+def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float) \
+        -> Tuple[bool, float, float]:
+    """
+    General Chi Square Test for gaussian process
+
+    H0: Covariance = cov
+    H1: Covariance != cov
+
+    Test statistics:
+        C_N(H) = |Z|^2,
+
+        Z = L^{-1}X
+    
+    N degrees of freedom -> chi^2_N distribution
+
+    Parameters
+    ----------
+    X: `(len(N))` ndarray
+        fGn. (N > 0)
+    cov: `(len(N), len(N))` ndarray
+        Covariance matrix in the hypothesis test
+    alpha:
+        Significance level. (0 <= alpha <= 1)
+
+    Return
+    ------
+    accept: bool
+        Result of test.
+    stat: float
+        Test statistics.
+    critical_val: float
+        Critical value to accept H0
+    """
+    assert 0 <= alpha <= 1
+    assert len(cov) == len(X)
+
+    N = X.size
+    L = cholesky(cov, lower=True)
+
+    Z:np.ndarray = solve_triangular(L, X, lower=True)
+    stat:float = Z.dot(Z).item()
+
+    critical_val:float = stats.chi2.ppf(alpha, N).item()
+    accept = stat <= critical_val
+
+    return accept, stat, critical_val
+
+
 def fGn_chi_square_test(X: np.ndarray, H: float, alpha: float) \
         -> Tuple[bool, float, float]:
     """
@@ -50,15 +98,7 @@ def fGn_chi_square_test(X: np.ndarray, H: float, alpha: float) \
 
     N = X.size
     cov = utils.cov(N, H)
-    L = cholesky(cov, lower=True)
-
-    Z:np.ndarray = solve_triangular(L, X, lower=True)
-    stat:float = Z.dot(Z).item()
-
-    critical_val:float = stats.chi2.ppf(alpha, N).item()
-    accept = stat <= critical_val
-
-    return accept, stat, critical_val
+    return cov_matrix_chi_square_test(X, cov, alpha)
 
 def fBm_chi_square_test(X: np.ndarray, H: float, alpha: float) \
         -> Tuple[bool, float, float]:
@@ -99,6 +139,48 @@ def fBm_chi_square_test(X: np.ndarray, H: float, alpha: float) \
     fGn:np.ndarray = np.diff(X)
 
     a, s, c = fGn_chi_square_test(fGn, H, alpha)
+
+    return a, s, c
+
+def bfBm_chi_square_test(X: np.ndarray, H1: float, H2: float, rho: float,
+        alpha: float) -> Tuple[bool, float, float]:
+    """
+    Chi Square Test for bfBm (Bivariate fBm) with spacing 1
+
+    H0: bfBm is following the right covariance structure
+    H1: bfBm is following the right covariance structure
+
+    Parameters
+    ----------
+    X: `(len(N))` ndarray
+        fBm. (N > 1)
+    H1: float
+        Hurst parameter in the hypothesis test. (0 < H1 < 1)
+    H2: float
+        Hurst parameter in the hypothesis test. (0 < H2 < 1)
+    rho: float
+        Correlation parameter in the hypothesis test. (0 <= rho < 1)
+    alpha:
+        Significance level. (0 <= alpha <= 1)
+
+    Return
+    ------
+    accept: bool
+        Result of test.
+    stat: float
+        Test statistics.
+    critical_val: float
+        Critical value to accept H0
+
+    """
+    fGn:np.ndarray = np.diff(X)
+    fGn = fGn.flatten()
+
+    cov = utils.bivariate_fGn_cov_structure(
+        fGn.size // 2, H1, H2, rho
+    )
+
+    a, s, c = cov_matrix_chi_square_test(fGn, cov, alpha)
 
     return a, s, c
 
