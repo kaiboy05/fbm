@@ -3,10 +3,9 @@ from typing import Tuple
 
 import numpy as np
 from scipy import stats
-import scipy
 from scipy.linalg import cholesky, solve_triangular
 
-from fBm import utils
+from fbm import utils
 
 def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float) \
         -> Tuple[bool, float, float]:
@@ -186,7 +185,7 @@ def bfBm_chi_square_test(X: np.ndarray, H1: float, H2: float, rho: float,
 
 
 if __name__ == '__main__':
-    from fBm.sim.naive import NaiveFBmGenerator
+    from fbm.sim.naive import NaiveFBmGenerator
     import matplotlib.pyplot as plt
 
     size = 100

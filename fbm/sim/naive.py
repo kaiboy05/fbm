@@ -4,7 +4,7 @@ from .fbm_generator import FBmGeneratorInterface
 from .fbm_generator import BiFBmGeneratorInterface
 import numpy as np
 
-from fBm import utils
+from fbm import utils
 from scipy.linalg import toeplitz
 
 class NaiveFBmGenerator(FBmGeneratorInterface):

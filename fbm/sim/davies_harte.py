@@ -3,7 +3,7 @@ from .fbm_generator import FBmGeneratorInterface
 from .fbm_generator import BiFBmGeneratorInterface
 import numpy as np
 
-from fBm import utils
+from fbm import utils
 
 def closest_pow2(n:int) -> int:
     """
@@ -251,7 +251,7 @@ if __name__ == '__main__':
     from .generator_test_utils import fBm_generator_chi_square_test
     from .generator_test_utils import bfBm_generator_chi_square_test
     import matplotlib.pyplot as plt
-    from fBm.testing import chi_square
+    from fbm.testing import chi_square
 
     np.random.seed(42)
 

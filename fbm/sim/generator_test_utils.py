@@ -1,9 +1,9 @@
 from .fbm_generator import FBmGeneratorInterface
 from .fbm_generator import BiFBmGeneratorInterface
 from numpy import arange
-from fBm.testing.chi_square import fBm_chi_square_test
-from fBm.testing.chi_square import bfBm_chi_square_test
-from fBm import utils
+from fbm.testing.chi_square import fBm_chi_square_test
+from fbm.testing.chi_square import bfBm_chi_square_test
+from fbm import utils
 import matplotlib.pyplot as plt
 
 def fBm_generator_chi_square_test(

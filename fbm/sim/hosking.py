@@ -3,7 +3,7 @@ from math import gamma
 from .fbm_generator import FBmGeneratorInterface
 import numpy as np
 
-from fBm import utils
+from fbm import utils
 
 class HoskingFBmGenerator(FBmGeneratorInterface):
     """
