@@ -7,7 +7,7 @@ from scipy.linalg import cholesky, solve_triangular
 
 from fbm import utils
 
-def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float) \
+def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float, chol:bool=False) \
         -> Tuple[bool, float, float]:
     """
     General Chi Square Test for gaussian process
@@ -27,9 +27,13 @@ def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float) \
     X: `(len(N))` ndarray
         fGn. (N > 0)
     cov: `(len(N), len(N))` ndarray
-        Covariance matrix in the hypothesis test
-    alpha:
+        Covariance matrix or cholesky of covariance matrix (require setting 
+        chol to true) in the hypothesis test
+    alpha: float
         Significance level. (0 <= alpha <= 1)
+    chol: bool
+        Bool flag for determine is cov a cholesky decomposition of 
+        covariance matrix
 
     Return
     ------
@@ -44,7 +48,11 @@ def cov_matrix_chi_square_test(X: np.ndarray, cov: np.ndarray, alpha: float) \
     assert len(cov) == len(X)
 
     N = X.size
-    L = cholesky(cov, lower=True)
+
+    if chol:
+        L = cov
+    else:
+        L = cholesky(cov, lower=True)
 
     Z:np.ndarray = solve_triangular(L, X, lower=True)
     stat:float = Z.dot(Z).item()
@@ -96,8 +104,8 @@ def fGn_chi_square_test(X: np.ndarray, H: float, alpha: float) \
     assert 0 <= alpha <= 1
 
     N = X.size
-    cov = utils.cov(N, H)
-    return cov_matrix_chi_square_test(X, cov, alpha)
+    chol_cov = utils.cov_chol(N, H)
+    return cov_matrix_chi_square_test(X, chol_cov, alpha, chol=True)
 
 def fBm_chi_square_test(X: np.ndarray, H: float, alpha: float) \
         -> Tuple[bool, float, float]:
@@ -175,11 +183,11 @@ def bfBm_chi_square_test(X: np.ndarray, H1: float, H2: float, rho: float,
     fGn:np.ndarray = np.diff(X)
     fGn = fGn.flatten()
 
-    cov = utils.bivariate_fGn_cov_structure(
+    cov = utils.bivariate_fGn_cov_structure_chol(
         fGn.size // 2, H1, H2, rho
     )
 
-    a, s, c = cov_matrix_chi_square_test(fGn, cov, alpha)
+    a, s, c = cov_matrix_chi_square_test(fGn, cov, alpha, chol=True)
 
     return a, s, c
 

@@ -5,6 +5,7 @@ import math
 
 import numpy as np
 from scipy.linalg import toeplitz
+from scipy.linalg import cholesky
 from functools import lru_cache
 
 def rho(n: int, H: float) -> float:
@@ -53,6 +54,16 @@ def cov(n: int, H: float) -> np.ndarray:
     cov = toeplitz(rho_vec)
 
     return cov
+
+@lru_cache(maxsize=16)
+def cov_chol(n: int, H:float) -> np.ndarray:
+    """
+    Return cholesky decomposition of covariance matrix of fGn
+
+    Same arguments as function cov
+    """
+    return cholesky(cov(n, H), lower=True)
+
 
 def bivariate_fGn_cross_cov(n:int, H1:float, H2:float, rho:float, 
         sigma1:float=1, sigma2:float=1) -> float:
@@ -189,6 +200,21 @@ def bivariate_fGn_cov_structure(size:int, H1:float, H2:float,
                 bivariate_fGn_cross_cov(i-j, H1, H2, 
                     correlated_rho, sigma1, sigma2)
     return result
+
+@lru_cache(maxsize=8)
+def bivariate_fGn_cov_structure_chol(size:int, H1:float, H2:float, 
+        correlated_rho:float, sigma1:float=1, sigma2:float=1) -> np.ndarray:
+    """
+    Return cholesky decomposition of covariance structure of the corresponding 
+    fGns of bivariate fBm (W^{H1}_t, W_{H2}_t), where
+    corr(W^{H1}_{1}, W^{H2}_{1}) = rho respectively.
+
+    Same argument as function bivariate_fGn_cov_structure
+    """
+    return cholesky(
+        bivariate_fGn_cov_structure(size, H1, H2, correlated_rho, sigma1, sigma2)
+        ,lower=True
+    )
 
 class RhoTooLargeError(Exception):
     """Rho is too large for given H1 and H2"""

@@ -180,13 +180,16 @@ if __name__ == '__main__':
       fBm_generator_chi_square_test(NaiveFBmGenerator(), H=H)
 
     bfBm_generator_chi_square_test(NaiveBiFBmGenerator(), 
-        H1=0.1, H2=0.3, rho=0.4
+        H1=0.5, H2=0.5, rho=0.6, size=100
     )
     bfBm_generator_chi_square_test(NaiveBiFBmGenerator(), 
-        H1=0.2, H2=0.2, rho=0.3
+        H1=0.1, H2=0.3, rho=0.4, size=100
     )
     bfBm_generator_chi_square_test(NaiveBiFBmGenerator(), 
-        H1=0.4, H2=0.25, rho=0.2
+        H1=0.2, H2=0.2, rho=0.3, size=100
+    )
+    bfBm_generator_chi_square_test(NaiveBiFBmGenerator(), 
+        H1=0.4, H2=0.25, rho=0.2, size=100
     )
     
     

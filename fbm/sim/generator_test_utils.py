@@ -1,6 +1,7 @@
 from .fbm_generator import FBmGeneratorInterface
 from .fbm_generator import BiFBmGeneratorInterface
 from numpy import arange
+from numpy import zeros
 from fbm.testing.chi_square import fBm_chi_square_test
 from fbm.testing.chi_square import bfBm_chi_square_test
 from fbm import utils
@@ -27,10 +28,21 @@ def fBm_generator_chi_square_test(
     )
     
     fBm_ts = [fBm_generator.generate_fBm(H, size) for _ in range(sim_num)]
+    fBm_ts = [zeros(1) for _ in range(sim_num)]
+    for ind in range(sim_num):
+        if ind + 1 == sim_num:
+            print(f'Generating {ind+1}/{sim_num}')
+        else:
+            print(f'Generating {ind+1}/{sim_num}', end='\r')
+        fBm_ts[ind] = fBm_generator.generate_fBm(H, size)
     
     accept_count = 0
-    for ts in fBm_ts:
+    for ind, ts in enumerate(fBm_ts):
         plt.plot(arange(size), ts)
+        if ind + 1 == sim_num:
+            print(f'Testing {ind+1}/{sim_num}')
+        else:
+            print(f'Testing {ind+1}/{sim_num}', end='\r')
         a, s, c = fBm_chi_square_test(ts, H, alpha)
 
         accept_count = accept_count + (1 if a else 0)
@@ -71,16 +83,25 @@ def bfBm_generator_chi_square_test(
         f"Generating {sim_num} simulations of bfBm with H1({H1}), H2({H2}), rho({rho}), size {size}."
     )
     
-    fBm_ts = [fBm_generator.generate_bifBm(H1, H2, rho, size) for _ in range(sim_num)]
+    fBm_ts = [zeros(1) for _ in range(sim_num)]
+    for ind in range(sim_num):
+        if ind + 1 == sim_num:
+            print(f'Generating {ind+1}/{sim_num}')
+        else:
+            print(f'Generating {ind+1}/{sim_num}', end='\r')
+        fBm_ts[ind] = fBm_generator.generate_bifBm(H1, H2, rho, size)
     
     accept_count = 0
     ac1 = 0
     ac2 = 0
-    for ts in fBm_ts:
+    for ind, ts in enumerate(fBm_ts):
         plt.plot(arange(size), ts[0])
         plt.plot(arange(size), ts[1])
+        if ind + 1 == sim_num:
+            print(f'Testing {ind+1}/{sim_num}')
+        else:
+            print(f'Testing {ind+1}/{sim_num}', end='\r')
         a, s, c = bfBm_chi_square_test(ts, H1, H2, rho, alpha)
-
         accept_count = accept_count + (1 if a else 0)
         if separate_compare:
             a1, _, _ = fBm_chi_square_test(ts[0], H1, alpha)

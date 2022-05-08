@@ -214,25 +214,28 @@ class DaviesHarteBiFBmGenerator(BiFBmGeneratorInterface):
             circulant_row1[N] = utils.bivariate_fGn_cov(N, H1, H2, rho)
             circulant_row1[-N+1:] = circulant_row1[N-1:0:-1]
 
+
             B = np.ndarray((N << 1, 2, 2), dtype=complex)
             B[:,0,0] = np.fft.fft(circulant_row1[:,0,0])
-            B[:,0,1] = B[:,1,0] = np.fft.fft(circulant_row1[:,0,1])
+            B[:,0,1] = np.fft.fft(circulant_row1[:,0,1])
+            B[:,1,0] = np.conjugate(B[:,0,1])
             B[:,1,1] = np.fft.fft(circulant_row1[:,1,1])
 
             self.__cached_transformation = np.ndarray((N << 1, 2, 2), dtype=complex)
             for i in range(len(self.__cached_transformation)):
                 e, L = np.linalg.eig(B[i])
+                assert np.all(e >= 0)
                 e = np.diag(np.sqrt(e))
                 self.__cached_transformation[i] = L @ e @ np.conjugate(L.T)
 
         v1 = np.random.standard_normal((2, N-1))
         v2 = np.random.standard_normal((2, N-1))
         w = np.ndarray((2, 2*N), dtype=complex)
-        w[:,0] = np.random.standard_normal(2) / np.sqrt(N)
-        w[:,1] = np.random.standard_normal(2) / np.sqrt(N)
-        w[:,1:N] = (v1 + 1j*v2) / np.sqrt(2*N)
+        w[:,0] = np.random.standard_normal(2) / np.sqrt(2*N)
+        w[:,N] = np.random.standard_normal(2) / np.sqrt(2*N)
+        w[:,1:N] = (v1 + 1j*v2) / np.sqrt(4*N)
         w[:,-N+1:] = np.conjugate(w[:,N-1:0:-1])
-        for i in range(len(w)):
+        for i in range(len(w[0])):
             w[:,i] = self.__cached_transformation[i] @ w[:,i]
 
         ts = np.ndarray((2, size))
@@ -250,18 +253,23 @@ class DaviesHarteBiFBmGenerator(BiFBmGeneratorInterface):
 if __name__ == '__main__':
     from .generator_test_utils import fBm_generator_chi_square_test
     from .generator_test_utils import bfBm_generator_chi_square_test
-    import matplotlib.pyplot as plt
-    from fbm.testing import chi_square
 
-    np.random.seed(42)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
 
-    fBm = DaviesHarteBiFBmGenerator()
-    bfBm_generator_chi_square_test(fBm, H1=0.5, H2=0.5, rho=0.6, 
-        sim_num=100, plot_graph=False
+    bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
+        H1=0.1, H2=0.3, rho=0.4
+    )
+    bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
+        H1=0.2, H2=0.2, rho=0.3
+    )
+    bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
+        H1=0.4, H2=0.25, rho=0.2
+    )
+    bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
+        H1=0.5, H2=0.1, rho=0.6
     )
 
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
