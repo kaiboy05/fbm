@@ -102,6 +102,11 @@ def bivariate_fGn_cross_cov(n:int, H1:float, H2:float, rho:float,
     Returns
     -------
     cross_cov: float
+
+    Notes
+    -------
+    Equation from 'BASIC PROPERTIES OF THE MULTIVARIATE FRACTIONAL BROWNIAN MOTION' section 2.2
+    By PIERRE-OLIVIER et al
     """
     def w(h:int)->float:
         h = abs(h)

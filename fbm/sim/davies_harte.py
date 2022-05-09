@@ -127,7 +127,8 @@ class DaviesHarteBiFBmGenerator(BiFBmGeneratorInterface):
 
     Notes
     -----
-    Method from 'Simulation of FBm' master thesis section 2.1.3
+    Method from 'BASIC PROPERTIES OF THE MULTIVARIATE FRACTIONAL BROWNIAN MOTION' section 5
+    By PIERRE-OLIVIER et al
     """
 
     def __init__(self) -> None:

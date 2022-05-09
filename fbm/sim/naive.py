@@ -81,6 +81,11 @@ class NaiveFBmGenerator(FBmGeneratorInterface):
 class NaiveBiFBmGenerator(BiFBmGeneratorInterface):
     """
     Generator Interface for generating bivariate fractional brownian motion (bfBm).
+
+    Notes
+    -----
+    Method from 'BASIC PROPERTIES OF THE MULTIVARIATE FRACTIONAL BROWNIAN MOTION' section 5
+    By PIERRE-OLIVIER et al
     """
     def __init__(self) -> None:
         self.__cached_H1:float = -1
