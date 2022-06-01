@@ -255,11 +255,13 @@ if __name__ == '__main__':
     from .generator_test_utils import fBm_generator_chi_square_test
     from .generator_test_utils import bfBm_generator_chi_square_test
 
-    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
-    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
-    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
-    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
-    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
+    import matplotlib.pyplot as plt
+
+    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
+    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
+    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
+    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
+    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
 
     bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
         H1=0.1, H2=0.3, rho=0.4
@@ -273,4 +275,10 @@ if __name__ == '__main__':
     bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
         H1=0.5, H2=0.1, rho=0.6
     )
+    # bfbm = DaviesHarteBiFBmGenerator()
+    # ts = bfbm.generate_bifBm(H1=0.5, H2=0.1, rho=0.2, size=1000)
+    # plt.plot(ts[0], label="H1=0.5")
+    # plt.plot(ts[1], label="H1=0.3")
+    # plt.legend()
+    # plt.show()
 

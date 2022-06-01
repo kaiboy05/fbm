@@ -53,7 +53,7 @@ class CholeskyFBmGenerator(FBmGeneratorInterface):
 
         return ts
 
-    def get_Li(self, i) -> np.ndarray:
+    def get_Li(self, i:int) -> np.ndarray:
         while i >= len(self.__L):
             curr_size = len(self.__L)
             new_l = np.ndarray(curr_size + 1)
