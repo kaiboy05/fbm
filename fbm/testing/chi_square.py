@@ -209,7 +209,7 @@ if __name__ == '__main__':
         Generating {sim_num} simulations of fBm with Hurst {H}, size {size}.
     """)
     
-    fBm_ts = [fBm_generator.generate_fBm(H, size) for _ in range(sim_num)]
+    fBm_ts = [fBm_generator.generate_norm_fBm(H, size) for _ in range(sim_num)]
     
     accept_count = 0
     for ts in fBm_ts:

@@ -33,42 +33,7 @@ class DaviesHarteFBmGenerator(FBmGeneratorInterface):
         self.__cached_H:float = -1
         self.__processed_eigs:np.ndarray = np.array([1])
 
-    def seed(self, s: int) -> None:
-        """
-        Set the seed of the generator.
-
-        Parameters
-        ----------
-        seed : int
-        """
-        np.random.seed(s)
-
-    def generate_fBm(self, H: float, size: int) -> np.ndarray:
-        """
-        Generate time series of fBm, with spacing 1,
-        and the the first element must be 0.
-
-        Parameters
-        ----------
-        H: int
-            Hurst parameter. Should be in range `(0, 1)`.
-
-        size: int
-            Size of time series to generate. Should be larger than 1.
-
-        Returns
-        -------
-        ts: `(len(size))` ndarray
-            Time series of fBm, with spacing 1.
-        """
-        assert size > 1
-
-        fGn = self.generate_fGn(H, size - 1)
-        ts = np.cumsum(np.insert(fGn, 0, 0))
-
-        return ts
-
-    def generate_fGn(self, H: float, size: int) -> np.ndarray:
+    def generate_norm_fGn(self, H: float, size: int) -> np.ndarray:
         """
         Generate time series of fractional gaussian noise (fGn), with spacing 1.
 
@@ -257,11 +222,11 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
 
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
-    # fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.1)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.25)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.5)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.75)
+    fBm_generator_chi_square_test(DaviesHarteFBmGenerator(), H=0.9)
 
     bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
         H1=0.1, H2=0.3, rho=0.4

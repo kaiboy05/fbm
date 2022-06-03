@@ -27,14 +27,14 @@ def fBm_generator_chi_square_test(
         f"Generating {sim_num} simulations of fBm with Hurst {H}, size {size}."
     )
     
-    fBm_ts = [fBm_generator.generate_fBm(H, size) for _ in range(sim_num)]
+    fBm_ts = [fBm_generator.generate_norm_fBm(H, size) for _ in range(sim_num)]
     fBm_ts = [zeros(1) for _ in range(sim_num)]
     for ind in range(sim_num):
         if ind + 1 == sim_num:
             print(f'Generating {ind+1}/{sim_num}')
         else:
             print(f'Generating {ind+1}/{sim_num}', end='\r')
-        fBm_ts[ind] = fBm_generator.generate_fBm(H, size)
+        fBm_ts[ind] = fBm_generator.generate_norm_fBm(H, size)
     
     accept_count = 0
     for ind, ts in enumerate(fBm_ts):
