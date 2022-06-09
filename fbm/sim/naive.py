@@ -56,49 +56,7 @@ class NaiveBiFBmGenerator(BiFBmGeneratorInterface):
         self.__cached_H2:float = -1
         self.__cov:np.ndarray = np.array([[1]])
 
-    def seed(self, s: int) -> None:
-        """
-        Set the seed of the generator.
-
-        Parameters
-        ----------
-        seed : int
-        """
-        np.random.seed(s)
-
-    def generate_bifBm(self, H1: float, H2: float, rho:float, size: int) -> np.ndarray:
-        """
-        Generate time series of bivariate fBm, with spacing 1,
-        two correlated by rho.
-
-        Parameters
-        ----------
-        H1: float
-            Hurst parameter. Should be in range `(0, 1)`.
-        
-        H2: float
-            Hurst parameter. Should be in range `(0, 1)`.
-        
-        rho: float
-            Correlation coefficient. Should be in range `[0, 1]`.
-
-        size: int
-            Size of time series to generate. Should be larger than 1.
-
-        Returns
-        -------
-        ts: `(2, len(size))` ndarray
-            Time series of bivariate fBm, with spacing 1.
-
-        """
-        assert size > 1
-
-        fGns = self.generate_bifGn(H1, H2, rho, size - 1)
-        ts = np.cumsum(np.insert(fGns, 0, 0, axis=1), axis=1)
-
-        return ts
-
-    def generate_bifGn(self, H1: float, H2: float, rho:float, size: int) -> np.ndarray:
+    def generate_norm_bifGn(self, H1: float, H2: float, rho:float, size: int) -> np.ndarray:
         """
         Generate time series of fGns of bivariate fBm, with spacing 1,
         two correlated by rho.

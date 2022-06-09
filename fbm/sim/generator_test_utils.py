@@ -89,7 +89,7 @@ def bfBm_generator_chi_square_test(
             print(f'Generating {ind+1}/{sim_num}')
         else:
             print(f'Generating {ind+1}/{sim_num}', end='\r')
-        fBm_ts[ind] = fBm_generator.generate_bifBm(H1, H2, rho, size)
+        fBm_ts[ind] = fBm_generator.generate_norm_bifBm(H1, H2, rho, size)
     
     accept_count = 0
     ac1 = 0

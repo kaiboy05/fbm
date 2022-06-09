@@ -161,6 +161,53 @@ def bivariate_fGn_cov(n:int, H1:float, H2:float, correlated_rho:float,
     
     return result
 
+def multivariate_fGn_cov(n:int, Hs: np.ndarray, correlated_rho:np.ndarray, 
+        sigmas=None) -> np.ndarray:
+    """
+    Covariance matrix of the corresponding fGns of
+    bivariate fBm (W^{H1}_t, W_{H2}_t), where
+    corr(W^{H1}_{1}, W^{H2}_{1}) = rho
+    respectively.
+
+    [
+        [rho_1,1(n), rho_1,2(n), ..., rho_1,p(n)], 
+        ..., 
+        [rho_p,1(n), rho_p,2(n), rho_p,p(n)]
+    ]
+
+    Parameters
+    ----------
+    n: int
+        lag parameter.
+
+    Hs: np.ndarray
+            Hurst parameters. Should be in range `(0, 1)**p`.
+        
+    rho: np.ndarray
+        Correlation coefficients. Should be in range `[0, 1]**(p*p)`
+    
+    sigmas: np.ndarray
+        Std deviation of W^{H1}_{1}
+
+    Returns
+    -------
+    cov: `(2, 2)` ndarray
+    """
+    p = Hs.size
+    result = np.ndarray((p,p))
+    if sigmas is None:
+        sigmas = np.ones(p)
+    
+    for i in range(p):
+        result[i][i] = rho(n, Hs[i]) * sigmas[i]**2
+        for j in range(i):
+            if i != j:
+                result[i][j] = result[j][i] = bivariate_fGn_cross_cov(
+                    n, Hs[i], Hs[j], correlated_rho[i][j],
+                    sigma1=sigmas[i], sigma2=sigmas[j])
+    
+    return result
+
 @lru_cache(maxsize=8)
 def bivariate_fGn_cov_structure(size:int, H1:float, H2:float, 
         correlated_rho:float, sigma1:float=1, sigma2:float=1) -> np.ndarray:
@@ -265,6 +312,12 @@ class BackupHelper:
     def dump_final(self, obj):
         pickle.dump(obj, self.file)
         self.file.close()
+
+def load_pickel(path, ext='pickle'):
+    result = None
+    with open(f'{path}.{ext}', 'rb') as f:
+        result = pickle.load(f)
+    return result
 
 
 class FunctionTimer:
