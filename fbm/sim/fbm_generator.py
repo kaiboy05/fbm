@@ -111,7 +111,7 @@ class FBmGeneratorInterface:
         if T <= 0:
             T = size
         spacing = T / size
-        return self.generate_norm_fGn(H, size) * spacing**H
+        return self.generate_norm_fGn(H, size) * (spacing**H)
 
 class BiFBmGeneratorInterface:
     """

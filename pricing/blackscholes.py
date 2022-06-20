@@ -1,5 +1,4 @@
 from .interface import ModelInterface
-from .price_engine import MontelCarloOptionPricingEngine
 import numpy as np
 
 class BlackScholes(ModelInterface):
@@ -26,6 +25,7 @@ class BlackScholes(ModelInterface):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    from .price_engine import MontelCarloOptionPricingEngine
 
     bs = BlackScholes()
     bs.set_parameters(mu=0.03, vol=0.15)

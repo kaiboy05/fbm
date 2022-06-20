@@ -1,5 +1,4 @@
 from .interface import ModelInterface
-from .price_engine import MontelCarloOptionPricingEngine
 import numpy as np
 
 class Heston(ModelInterface):
@@ -55,29 +54,34 @@ class Heston(ModelInterface):
 
             s_path[:,t+1] = S
             v_path[:,t+1] = V
+        
+        # for i in range(p):
+        #     plt.plot(v_path[i])
+        #     plt.show()
 
         return s_path
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    from .price_engine import MontelCarloOptionPricingEngine
 
     heston = Heston()
-    r = 0.03
+    r = 0
     params = {
         'mu': r,
-        'corr': 0.02,
+        'corr': -0.681,
 
-        'v0': 0.0225,
-        'v_mr': 2,
-        'v_mu': 0.0225,
-        'v_vol': 0.3
+        'v0': 0.392,
+        'v_mr': 0.1,
+        'v_mu': 0.03156,
+        'v_vol': 0.331
     }
     heston.set_parameters(**params)
 
-    T = 1
+    T = 2
     size = 1001
     dt = T / size
-    S0 = 300
+    S0 = 100
 
     # Simulate a path of Heston
     path = heston.simulate(S0, T, size, return_path=True)
@@ -87,11 +91,11 @@ if __name__ == '__main__':
     plt.show()
 
     # Compute european call option price by MonteCarlo
-    strike = 300
+    strike = 100
     batch_sim_num = 10000
     pricer = MontelCarloOptionPricingEngine(heston)
 
-    price = pricer.european_call_option_price(S0, strike, r=r,
+    price = pricer.european_call_option_price(S0, np.array([strike]), r=r,
         T=T, size=size, batch_sim_num=batch_sim_num, batch_num=10,
         **params)
     print(price)

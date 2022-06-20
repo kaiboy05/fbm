@@ -1,4 +1,3 @@
-from logging import critical
 from typing import Tuple
 
 import numpy as np

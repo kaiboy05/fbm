@@ -42,9 +42,10 @@ class ModelInterface:
 
     def simulate(self, 
             S0:float, T:float, size:int, sim_num:int=1,
-            generator=None, seed=None, return_path=False) -> np.ndarray:
+            generator=None, seed=None, return_path=False, 
+            verbose=True) -> np.ndarray:
         dt = T / (size-1)
-        dws = self.simulate_dws(T, size, sim_num, generator, seed)
+        dws = self.simulate_dws(T, size, sim_num, generator, seed, verbose=verbose)
         paths = self.simulate_with_dws(S0, dt, dws, return_path)
         return paths
 

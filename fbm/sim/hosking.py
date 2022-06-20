@@ -126,7 +126,7 @@ if __name__ == '__main__':
     from .generator_test_utils import fBm_generator_chi_square_test
     from .naive import NaiveFBmGenerator
 
-    # fBm_generator_chi_square_test(HoskingFBmGenerator(), H=0.1, sim_num=1, size=5, plot_graph=True)
+    fBm_generator_chi_square_test(HoskingFBmGenerator(), H=0.1, sim_num=1, size=5, plot_graph=True)
     fBm_generator_chi_square_test(HoskingFBmGenerator(), H=0.1)
     fBm_generator_chi_square_test(HoskingFBmGenerator(), H=0.25)
     fBm_generator_chi_square_test(HoskingFBmGenerator(), H=0.5)

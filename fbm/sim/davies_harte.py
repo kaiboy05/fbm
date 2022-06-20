@@ -54,20 +54,16 @@ class DaviesHarteFBmGenerator(FBmGeneratorInterface):
         if self.__cached_H != H or len(self.__processed_eigs) < 2*size:
             circulant_row1 = np.ndarray(N << 1)
 
-            circulant_row1[:N] = np.array(
-                [utils.rho(i, H) for i in range(N)]
+            circulant_row1[:N+1] = np.array(
+                [utils.rho(i, H) for i in range(N+1)]
             )
-            circulant_row1[N] = 0
             circulant_row1[-N+1:] = circulant_row1[N-1:0:-1]
 
             self.__processed_eigs = np.fft.fft(circulant_row1)
-            # Eigenvalues of circulant matrix might not be always positive
-            # But thesis stated that it must be positive
             self.__processed_eigs = np.abs(self.__processed_eigs)
-            self.__processed_eigs /= (4 * N)
-            self.__processed_eigs[0] *= 2
-            self.__processed_eigs[N] *= 2
             self.__processed_eigs = np.sqrt(self.__processed_eigs)
+            
+            self.__cached_H = H
 
         v1 = np.random.standard_normal(N-1)
         v2 = np.random.standard_normal(N-1)
@@ -80,7 +76,7 @@ class DaviesHarteFBmGenerator(FBmGeneratorInterface):
 
         # print(self.__processed_eigs)
 
-        ts = np.fft.fft(self.__processed_eigs * w)
+        ts = np.fft.fft(self.__processed_eigs * w) / np.sqrt(2 * N)
 
         return np.real(ts[:size])
 
@@ -246,12 +242,12 @@ if __name__ == '__main__':
     bfBm_generator_chi_square_test(DaviesHarteBiFBmGenerator(), 
         H1=0.5, H2=0.1, rho=0
     )
-    # mfbm = DaviesHarteMFBmGenerator()
-    # rhos=np.zeros((3,3))
-    # ts = mfbm.generate_mfBm(Hs=np.array([0.1,0.1,0.1]), rho=rhos, size=1000)
-    # plt.plot(ts[0], label="H1=0.5")
-    # plt.plot(ts[1], label="H1=0.3")
-    # plt.plot(ts[2], label="H1=0.1")
-    # plt.legend()
-    # plt.show()
+    mfbm = DaviesHarteMFBmGenerator()
+    rhos=np.zeros((3,3))
+    ts = mfbm.generate_mfBm(Hs=np.array([0.1,0.1,0.1]), rho=rhos, size=1000)
+    plt.plot(ts[0], label="H1=0.5")
+    plt.plot(ts[1], label="H1=0.3")
+    plt.plot(ts[2], label="H1=0.1")
+    plt.legend()
+    plt.show()
 
