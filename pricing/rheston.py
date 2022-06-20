@@ -3,7 +3,8 @@ from .interface import ModelInterface
 from fbm.sim import DaviesHarteBiFBmGenerator
 import numpy as np
 from numpy.polynomial.legendre import leggauss
-from numpy.polynomial.laguerre import laggauss
+# from numpy.polynomial.laguerre import laggauss
+from scipy.special import roots_genlaguerre as laggauss
 import math
 
 class RoughHeston(ModelInterface):
@@ -112,13 +113,11 @@ class RoughHestonFast(ModelInterface):
         return s, w
     
     @staticmethod
-    def _construct_x_w(h, No, Ns, Nl, M, M_prime):
+    def _construct_x_w(h, No, Ns, Nl, M, M_prime, size):
+        # No, Ns, Nl, M, M_prime, 
         # xs = list()
         # ws = list()
         # (x_no, w_no) = RoughHestonFast._get_gauss_quadrature(0, 2.**(-M), No)
-
-        # print(x_no)
-        # print(w_no)
 
         # xs.append(x_no)
         # ws.append(w_no*x_no**(-(h+0.5)))
@@ -134,8 +133,9 @@ class RoughHestonFast(ModelInterface):
         # xs = np.concatenate(xs).ravel()
         # ws = np.concatenate(ws).ravel() / math.gamma(0.5 - h)
         # return xs, ws
-        x, w = laggauss(100)
-        w = w * np.exp(x)*x**(-(h+0.5)) / math.gamma(0.5 - h)
+        x, w = laggauss(size, -0.5-h)
+        w = w * np.exp(x) / math.gamma(0.5 - h)
+
         return x, w
 
 
@@ -159,9 +159,11 @@ class RoughHestonFast(ModelInterface):
         Nl = np.floor(-np.log2(tol) - np.log2(dt)).astype(int)
         N_prime = No + M*Ns + (M_prime + 1)*Nl
 
-        x, w = self._construct_x_w(h2, No, Ns, Nl, M, M_prime)
-        N_prime = 100
-        print(np.sum(w * np.exp(-x*0.5)))
+        # Laguere
+        N_prime = np.log(size).astype(int)
+        x, w = self._construct_x_w(h2, No, Ns, Nl, M, M_prime, N_prime)
+
+        # x, w = self._construct_x_w(h2, N_prime)
 
         s_path = np.ndarray((p, size))
         v_path = np.ndarray((p, size))
@@ -177,21 +179,24 @@ class RoughHestonFast(ModelInterface):
         V = v_path[:,0]
 
         e_x_dt = np.exp(-x*dt)
-
-        print(np.sum(w*np.exp(-x*0.5)))
-
+        h2 = 0.5
         for t in range(size-1):
             dv = dt**(h2 + 0.5)*f(V) / math.gamma(h2 + 0.5)
-            dv += np.sum(np.atleast_2d((Hs + Js) @ (w * e_x_dt)), axis=1)
-            dv += dt**(h2) * g(V) * dw2[:,t]
-            dv /= math.gamma(h2 + 0.5)
+            # print(((Hs + Js).dot(w * e_x_dt)).shape)
+            dv += (Hs + Js).dot(w * e_x_dt)
+            # dv += V - v0
+            dv += dt**(h2 - 0.5) * g(V) * dw2[:,t]
+            # dv /= math.gamma(h2 + 0.5)
 
             Hs = np.multiply.outer(f(V), (1 - e_x_dt)/x) + \
                     Hs * e_x_dt
-            Js = np.multiply.outer(g(V), (1 - e_x_dt)/x) * np.sqrt(dt) * \
-                    dw2[:,t][:, None] + Js * e_x_dt
-            
-            V = np.maximum(v0 + dv, 0)
+            Js = np.multiply.outer(g(V), (1 - e_x_dt)/x) * dw2[:,t][:, None] + \
+                    Js * e_x_dt
+
+            dv += v_vol*np.sqrt(V)*dw2[:,t]
+            V += dv
+            # V += v_mr*(v_mu - V)*dt + v_vol*np.sqrt(V)*dw2[:,t]
+            V = np.maximum(V, 0)
             S += mu*S*dt + np.sqrt(V)*S*dw1[:,t]
             v_path[:,t+1] = V
             s_path[:,t+1] = S
@@ -211,7 +216,7 @@ if __name__ == '__main__':
     params = {
         'mu': r,
         'corr': -0.681,
-        'h2': 0.48,
+        'h2': 0.499,
 
         'v0': 0.392,
         'v_mr': 0.1,
@@ -226,8 +231,8 @@ if __name__ == '__main__':
     S0 = 100
 
     # Simulate a path of Heston
-    path = heston.simulate(S0, T, size, sim_num=50, return_path=True)
-    t = np.linspace(0, T, size)
+    path = heston.simulate(S0, T, size, sim_num=1, return_path=True, seed=42)
+    # t = np.linspace(0, T, size)
     # for p in path:
     #     plt.plot(t, p)
     #     plt.show()
@@ -239,5 +244,5 @@ if __name__ == '__main__':
 
     price = pricer.european_call_option_price(S0, np.array([strike]), r=r,
         T=T, size=size, batch_sim_num=batch_sim_num, batch_num=1,
-        **params)
+        **params, seed=42)
     print(price)

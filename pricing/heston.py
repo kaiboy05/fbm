@@ -47,6 +47,8 @@ class Heston(ModelInterface):
         s_path[:,0] = S = S0
         v_path[:,0] = V = v0
 
+        print(dws)
+
         for t in range(size-1):
             S += S*mu*dt + S*np.sqrt(V)*dw1[:,t]
             V += v_mr*(v_mu - V)*dt + v_vol*np.sqrt(V)*dw2[:,t]
@@ -55,9 +57,9 @@ class Heston(ModelInterface):
             s_path[:,t+1] = S
             v_path[:,t+1] = V
         
-        # for i in range(p):
-        #     plt.plot(v_path[i])
-        #     plt.show()
+        for i in range(p):
+            plt.plot(v_path[i])
+            plt.show()
 
         return s_path
 
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     S0 = 100
 
     # Simulate a path of Heston
-    path = heston.simulate(S0, T, size, return_path=True)
+    path = heston.simulate(S0, T, size, return_path=True, seed=42)
     t = np.linspace(0, T, size)
 
     plt.plot(t, path)
@@ -97,5 +99,5 @@ if __name__ == '__main__':
 
     price = pricer.european_call_option_price(S0, np.array([strike]), r=r,
         T=T, size=size, batch_sim_num=batch_sim_num, batch_num=10,
-        **params)
+        **params, seed=42)
     print(price)
