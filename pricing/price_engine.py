@@ -91,6 +91,35 @@ class MontelCarloOptionPricingEngine:
         prices /= batch_num
 
         return np.squeeze(prices)
+    
+    def european_call_option_price_sim(self, 
+            S0:float, Ks:np.ndarray, r:float, T:float, 
+            size:int, batch_sim_num=10000, batch_num=1, verbose=False, quiet=False,
+            **model_args):
+
+        self.model.set_parameters(model_args)
+
+        prices = np.zeros((batch_num*batch_sim_num, Ks.shape[0]))
+        count = 0
+        if not quiet:
+            print(f'Finsihed {0: .2%}', end="\r")
+        for i in range(batch_num):
+            if verbose and not quiet:
+                print(f'Running batch {(i+1)}/{batch_num}')
+            S = self.model.simulate(S0, T, size, sim_num=batch_sim_num, 
+                    generator=self.generator, verbose=verbose)
+
+            call_H = np.maximum(np.subtract.outer(S, Ks), 0)  # type: ignore
+            call_price_sample = np.exp(-r*T) * call_H
+            prices[count*batch_sim_num:(count + 1)*batch_sim_num] = call_price_sample
+            count += 1
+
+            if not verbose and not quiet:
+                print(f'Finsihed {(i+1)/batch_num: .2%}', end="\r")
+        if not verbose and not quiet:
+            print()
+
+        return prices
 
 
 if __name__ == '__main__':

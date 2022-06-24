@@ -26,11 +26,11 @@ class ModelInterface:
 
         return dw[None,:]
     
-    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:float,
+    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:np.float64,
             dws:np.ndarray) -> np.ndarray:
         return np.zeros(1)
 
-    def simulate_with_dws(self, S0:float, dt:float, 
+    def simulate_with_dws(self, S0:float, dt:np.float64, 
             dws:np.ndarray, return_paths=False) -> np.ndarray:
         p = dws.shape[1]
         size = dws.shape[2] + 1
@@ -44,7 +44,7 @@ class ModelInterface:
             S0:float, T:float, size:int, sim_num:int=1,
             generator=None, seed=None, return_path=False, 
             verbose=True) -> np.ndarray:
-        dt = T / (size-1)
+        dt = np.float64(T) / (size-1)
         dws = self.simulate_dws(T, size, sim_num, generator, seed, verbose=verbose)
         paths = self.simulate_with_dws(S0, dt, dws, return_path)
         return paths

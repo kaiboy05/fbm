@@ -15,7 +15,7 @@ class Heston(ModelInterface):
 
     def simulate_dws(self, T:float, size:int, sim_num:int,
             generator=None, seed=None, verbose=True) -> np.ndarray:
-        dt = T / (size-1)
+        dt = np.float64(T) / (size-1)
         if seed is not None:
             np.random.seed(seed)
         corr = self.p['corr']
@@ -31,7 +31,7 @@ class Heston(ModelInterface):
 
         return dws
 
-    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:float,
+    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:np.float64,
             dws:np.ndarray) -> np.ndarray:
         mu = self.p['mu']
         v0 = self.p['v0']
@@ -47,8 +47,6 @@ class Heston(ModelInterface):
         s_path[:,0] = S = S0
         v_path[:,0] = V = v0
 
-        print(dws)
-
         for t in range(size-1):
             S += S*mu*dt + S*np.sqrt(V)*dw1[:,t]
             V += v_mr*(v_mu - V)*dt + v_vol*np.sqrt(V)*dw2[:,t]
@@ -57,9 +55,13 @@ class Heston(ModelInterface):
             s_path[:,t+1] = S
             v_path[:,t+1] = V
         
-        for i in range(p):
-            plt.plot(v_path[i])
-            plt.show()
+        # for i in range(p):
+        #     plt.plot(s_path[i])
+        #     plt.show()
+        # print(s_path[:,-1])
+        plt.plot(np.squeeze(v_path))
+        plt.show()
+        input()
 
         return s_path
 
@@ -73,9 +75,9 @@ if __name__ == '__main__':
         'mu': r,
         'corr': -0.681,
 
-        'v0': 0.392,
+        'v0': 0.0392,
         'v_mr': 0.1,
-        'v_mu': 0.03156,
+        'v_mu': 0.3156,
         'v_vol': 0.331
     }
     heston.set_parameters(**params)
@@ -87,10 +89,10 @@ if __name__ == '__main__':
 
     # Simulate a path of Heston
     path = heston.simulate(S0, T, size, return_path=True, seed=42)
-    t = np.linspace(0, T, size)
+    # t = np.linspace(0, T, size)
 
-    plt.plot(t, path)
-    plt.show()
+    # plt.plot(t, path)
+    # plt.show()
 
     # Compute european call option price by MonteCarlo
     strike = 100

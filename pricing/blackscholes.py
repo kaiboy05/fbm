@@ -51,7 +51,7 @@ if __name__ == '__main__':
     r = 0.03
     vol = 0.15
 
-    price = pricer.european_call_option_price(S0, strike, r=r,
+    price = pricer.european_call_option_price(S0, np.array([strike]), r=r,
         T=T, size=size, batch_sim_num=batch_sim_num, batch_num=10,
         mu=r, vol=vol)
     print(price)

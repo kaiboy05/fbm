@@ -17,7 +17,6 @@ class FractionalBlackScholes(ModelInterface):
 
     def simulate_dws(self, T:float, size:int, sim_num:int,
             generator=None, seed=None, verbose=True) -> np.ndarray:
-        dt = T / (size-1)
         if generator is None:
             generator = DaviesHarteFBmGenerator()
         if seed is not None:
@@ -35,7 +34,7 @@ class FractionalBlackScholes(ModelInterface):
 
         return dws
 
-    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:float,
+    def _simulate_with_dws(self, S0:float, p:int, size:int, dt:np.float64,
             dws:np.ndarray) -> np.ndarray:
         mu = self.p['mu']
         sigma = self.p['sigma']

@@ -57,7 +57,7 @@ class HoskingFBmGenerator(FBmGeneratorInterface):
         self.__cache_autocov(H, size+1)
         if self.cached_H != H:
             self.ds:list[np.ndarray] = [self.__autocov[:1]]
-            self.sig2.resize(size)
+            self.sig2 = np.resize(self.sig2, size)
             self.sig2[0] = 1 - self.__autocov[0]**2
             curr_size = 1
 
